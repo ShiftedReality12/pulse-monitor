@@ -43,6 +43,13 @@ public struct TimelineStore: Sendable {
     public static func isThrottling(thermal: UInt8, speedLimit: Int?) -> Bool {
         (thermal != TimelineSample.thermalUnknown && thermal >= 2) || (speedLimit.map { $0 < 100 } ?? false)
     }
+    /// Loads historical buckets in chronological order (demo / tests). Empty input is a no-op.
+    public mutating func preload(_ samples: [TimelineSample]) {
+        for sample in samples {
+            record(time: sample.time, pressure: sample.pressure, swap: sample.swap, compressed: sample.compressed,
+                   diskFree: sample.diskFree, thermal: sample.thermal, speedLimit: sample.speedLimit)
+        }
+    }
     public mutating func record(time: Double, pressure: UInt8, swap: UInt64?, compressed: UInt64?, diskFree: UInt64?, thermal: UInt8, speedLimit: Int?) {
         let start = (time / Self.bucket).rounded(.down) * Self.bucket
         let last = (next + capacity - 1) % capacity

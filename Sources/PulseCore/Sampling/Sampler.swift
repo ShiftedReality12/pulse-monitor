@@ -41,11 +41,18 @@ public final class SamplingSession: @unchecked Sendable {
     private var leakFindings: [LeakFinding] = []
     private var lastOwnerSample: Date?
     private var startedAt: Double?
+    private var demoTimelineSeeded = false
     public private(set) var history = NumericHistory()
     /// Refreshed on every visible sample; read on the same queue right after `sample`.
     public private(set) var insights = Insights()
     public init() {}
     public func sample(visible: Bool, forceProcessRefresh: Bool = false) -> (Snapshot, PlotHistory?) {
+        if !demoTimelineSeeded && PulseEnvironment.demoEnabled() {
+            demoTimelineSeeded = true
+            let seed = DemoData.timelineSeed()
+            timeline.preload(seed)
+            startedAt = seed.first?.time
+        }
         let snapshot = sampler.sample(includeProcesses: visible, forceProcessRefresh: forceProcessRefresh)
         history.append(HistorySample(snapshot))
         let time = snapshot.date.timeIntervalSince1970

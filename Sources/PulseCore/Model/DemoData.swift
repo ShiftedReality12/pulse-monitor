@@ -78,4 +78,28 @@ public enum DemoData {
         group.startedAt = Date().addingTimeInterval(-1_800 * Double(index + 1))
         return group
     }
+
+    /// About one hour of 30-second buckets with varying pressure, swap, and compressed memory for README charts.
+    public static func timelineSeed(endingAt time: Double = Date().timeIntervalSince1970, bucketCount: Int = 120) -> [TimelineSample] {
+        precondition(bucketCount >= 2)
+        let end = (time / TimelineStore.bucket).rounded(.down) * TimelineStore.bucket
+        let warningBuckets: Set<Int> = [28, 29, 30, 74, 75]
+        return (0..<bucketCount).map { index in
+            let age = bucketCount - 1 - index
+            let bucketTime = end - Double(age) * TimelineStore.bucket
+            let wave = sin(Double(index) * 0.18)
+            let swap: UInt64 = 900_000_000 &+ UInt64((wave + 1) * 350_000_000) &+ UInt64(index % 11) * 40_000_000
+            let compressed: UInt64 = 1_800_000_000 &+ UInt64((cos(Double(index) * 0.13) + 1) * 500_000_000) &+ UInt64((index * 3) % 9) * 60_000_000
+            let diskFree: UInt64 = 120_000_000_000 &- UInt64(index) * 25_000_000
+            return TimelineSample(
+                time: bucketTime,
+                pressure: warningBuckets.contains(index) ? 2 : 1,
+                swap: swap,
+                compressed: compressed,
+                diskFree: diskFree,
+                thermal: 0,
+                speedLimit: nil
+            )
+        }
+    }
 }

@@ -33,3 +33,20 @@ import Testing
     #expect(accounts[0].windows.first?.usedPercent == 30)
     #expect(accounts.allSatisfy { !$0.name.lowercased().contains("claude") })
 }
+
+@Test func demoTimelineSeedHasLengthAndSwapCompressedVariation() {
+    let samples = DemoData.timelineSeed(endingAt: 1_700_000_000, bucketCount: 120)
+    #expect(samples.count >= 2)
+    #expect(samples.count == 120)
+    let swaps = Set(samples.compactMap(\.swap))
+    let compressed = Set(samples.compactMap(\.compressed))
+    #expect(swaps.count >= 2)
+    #expect(compressed.count >= 2)
+    #expect(samples.contains { $0.pressure == 1 })
+    #expect(samples.contains { $0.pressure == 2 })
+    var store = TimelineStore()
+    store.preload(samples)
+    #expect(store.samples.count >= 2)
+    #expect(Set(store.samples.compactMap(\.swap)).count >= 2)
+    #expect(Set(store.samples.compactMap(\.compressed)).count >= 2)
+}

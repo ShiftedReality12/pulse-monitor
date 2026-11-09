@@ -85,7 +85,7 @@ Example with all optional sections forced off:
 PULSE_PROVIDER_HOME=/nonexistent PULSE_PROVIDER_PATH=/usr/bin build/Pulse.app/Contents/MacOS/Pulse --show-window
 ```
 
-`PULSE_DEMO=1` feeds generic sample session labels and usage text for local README screenshots. Leave it unset for normal use. Point providers at a temp fixture when you also want to hide live integrations:
+`PULSE_DEMO=1` feeds generic sample session labels, usage text, and about one hour of synthetic Memory timeline history for local README screenshots. Leave it unset for normal use. Point providers at a temp fixture when you also want to hide live integrations:
 
 ```sh
 PULSE_DEMO=1 PULSE_PROVIDER_HOME=/tmp/pulse-demo-fixture PULSE_PROVIDER_PATH=/tmp/pulse-demo-fixture/bin \
