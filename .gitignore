@@ -1,0 +1,14 @@
+.build/
+build/
+*.xcuserstate
+.DS_Store
+.env
+local.env
+*.p12
+*.key
+scripts/local.env
+scripts/__pycache__/
+.v*-prompt.md
+# PNG screenshots outside docs/evidence stay untracked.
+*.png
+!docs/evidence/**/*.png
