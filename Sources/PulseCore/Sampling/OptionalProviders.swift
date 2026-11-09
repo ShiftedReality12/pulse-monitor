@@ -15,7 +15,8 @@ public struct HerdrProvider: PulseProvider {
         self.fallbacks = fallbacks ?? (PulseEnvironment.providerPathOverridden() ? [] : ["/opt/homebrew/bin", "/usr/local/bin", home + "/.local/bin", home + "/.cargo/bin"])
     }
     public func isAvailable() -> Bool {
-        (path.split(separator: ":").map(String.init) + fallbacks).contains { access($0 + "/" + Self.processName, X_OK) == 0 }
+        if PulseEnvironment.demoEnabled() { return true }
+        return (path.split(separator: ":").map(String.init) + fallbacks).contains { access($0 + "/" + Self.processName, X_OK) == 0 }
     }
     /// Input contract for a future read-only pane snapshot adapter; no terminal content is read.
     public func panes(processes: [ProcessSample], paneByPID: [Int32: String]) -> [Int32: String] {
@@ -29,7 +30,8 @@ public struct AgentAccountsProvider: PulseProvider {
     private let home: URL
     public init(home: URL = PulseEnvironment.providerHome()) { self.home = home }
     public func isAvailable() -> Bool {
-        [".claude", ".codex"].contains { FileManager.default.fileExists(atPath: home.appendingPathComponent($0).path) }
+        if PulseEnvironment.demoEnabled() { return true }
+        return [".claude", ".codex"].contains { FileManager.default.fileExists(atPath: home.appendingPathComponent($0).path) }
     }
     /// Accept only the two configuration-home variables from a caller-supplied process environment.
     /// Acquiring per-process environments and rendering accounts are deferred to v7.
@@ -54,9 +56,13 @@ public struct UsageStripProvider: PulseProvider {
         }
     }
     public init(executable: URL) { self.executable = executable }
-    public func isAvailable() -> Bool { access(executable.path, X_OK) == 0 }
+    public func isAvailable() -> Bool {
+        if PulseEnvironment.demoEnabled() { return true }
+        return access(executable.path, X_OK) == 0
+    }
     /// Explicit, bounded read (at most the given seconds); never persisted.
     public func sample(timeout: Double = 1) async -> String? {
+        if PulseEnvironment.demoEnabled() { return DemoData.usageSwiftBar }
         guard isAvailable() else { return nil }
         let executable = executable
         return await Task.detached(priority: .utility) { ProviderCommand.read(executable: executable, arguments: ["--swiftbar"], timeout: timeout) }.value

@@ -76,7 +76,8 @@ final class ProcessSampler {
         }
         let live = Set(samples.map(\.pid))
         agentContext = agentContext.filter { live.contains($0.key) }
-        let groups = Attribution.groups(samples, metadata: &metadata)
+        var groups = Attribution.groups(samples, metadata: &metadata)
+        if PulseEnvironment.demoEnabled() { groups = DemoData.anonymizeGroups(groups) }
         previousProcesses = current; previousProcessTime = now
         s.groups = groups; s.processCount = count; s.limitedProcessCount = samples.filter { $0.resident == nil }.count
         s.topMemoryGroup = groups.filter { $0.resident != nil }.max { ($0.resident ?? 0) < ($1.resident ?? 0) }?.title

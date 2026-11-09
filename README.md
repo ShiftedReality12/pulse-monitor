@@ -6,7 +6,11 @@ drill-downs by Memory or CPU, with a minute of history for the top 12 owners.
 Expanded rows explain what each owner does and why it is running when that is known.
 Memory groups show summed physical footprint (Activity Monitor's Memory column). RSS is a secondary detail. Shared pages can still be counted more than once.
 
-This public tree ships without screenshots. Demo images were not retaken for this release; clone, build, and open the app to see live UI.
+![Overview](docs/screenshots/overview.png)
+
+![Glance](docs/screenshots/glance.png)
+
+![Memory](docs/screenshots/memory.png)
 
 ## Build and run
 
@@ -81,6 +85,14 @@ Example with all optional sections forced off:
 PULSE_PROVIDER_HOME=/nonexistent PULSE_PROVIDER_PATH=/usr/bin build/Pulse.app/Contents/MacOS/Pulse --show-window
 ```
 
+`PULSE_DEMO=1` feeds generic sample session labels and usage text for local README screenshots. Leave it unset for normal use. Point providers at a temp fixture when you also want to hide live integrations:
+
+```sh
+PULSE_DEMO=1 PULSE_PROVIDER_HOME=/tmp/pulse-demo-fixture PULSE_PROVIDER_PATH=/tmp/pulse-demo-fixture/bin \
+  PULSE_USAGE_EXECUTABLE=/tmp/pulse-demo-fixture/bin/usage \
+  build/Pulse-demo.app/Contents/MacOS/Pulse --show-window
+```
+
 The usage strip runs your own reader with `--swiftbar` while the window is open (at most once a minute, with a timeout) and never stores its output or keys. That tool may contact its providers; Pulse does not.
 See [architecture and provider boundaries](docs/ARCHITECTURE.md).
 
@@ -108,6 +120,14 @@ Build beside an installed Pulse without any certificate (ad-hoc signing, separat
 scripts/check.sh build
 PULSE_ADHOC=1 PULSE_OUTPUT=build/Pulse-v7.app PULSE_BUNDLE_ID=local.pulse.monitor.v7 PULSE_VERSION=0.7.0 scripts/bundle.sh
 open build/Pulse-v7.app
+```
+
+Demo screenshot bundle (does not replace `/Applications/Pulse.app`):
+
+```sh
+scripts/check.sh build
+PULSE_ADHOC=1 PULSE_OUTPUT=build/Pulse-demo.app PULSE_BUNDLE_ID=local.pulse.monitor.demo PULSE_VERSION=0.1.0-demo scripts/bundle.sh
+PULSE_DEMO=1 build/Pulse-demo.app/Contents/MacOS/Pulse --show-window
 ```
 
 `PULSE_ADHOC=1` ignores `scripts/local.env`. Open a view directly with `--show-window --show-section sessions|leaks|memory|disk|heat`.

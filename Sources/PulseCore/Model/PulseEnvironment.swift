@@ -2,6 +2,10 @@ import Foundation
 
 /// Test and demonstration overrides for optional-provider detection. They only point detection somewhere else; no file is moved.
 public enum PulseEnvironment {
+    /// `PULSE_DEMO=1` feeds generic sample labels for README screenshots. Unset leaves normal behaviour unchanged.
+    public static func demoEnabled(_ environment: [String: String] = ProcessInfo.processInfo.environment) -> Bool {
+        environment["PULSE_DEMO"] == "1"
+    }
     public static func providerHome(_ environment: [String: String] = ProcessInfo.processInfo.environment) -> URL {
         environment["PULSE_PROVIDER_HOME"].flatMap { $0.hasPrefix("/") ? URL(fileURLWithPath: $0) : nil } ?? FileManager.default.homeDirectoryForCurrentUser
     }
